@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur 3ème Pilier</title>
+    <style>
+        :root {
+            --primary-color: #269e54;
+            --secondary-color: #1b2e96;
+            --highlight-color: #10b56e;
+            --background-color: #d3e8f5;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Roboto', Helvetica;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 25px;
+            box-shadow: 0 90px 990px rgba(0,0,0,0.1);
+            width: 350px;
+            text-align: left;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            margin-left: 20px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .choice-group {
+            margin-bottom: 10px;
+        }
+
+        .choice {
+            border: 2px solid var(--secondary-color);
+            padding: 8px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .choice:hover {
+            background-color: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 0px 10px rgba(0,0,0,0.2);
+        }
+
+        .choice.selected {
+            background-color: var(--secondary-color);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateY(0px);
+        }
+
+        .slider-wrapper {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: #a3a6e6;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 10%;
+            background: var(--secondary-color);
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 30px;
+            height: 30px;
+            border-radius: 10%;
+            background: var(--secondary-color);
+            cursor: pointer;
+        }
+
+        .slider-value {
+            position: absolute;
+            top: -33px;
+            right: 15px;
+            font-size: 20px;
+            color: var(--secondary-color);
+        }
+
+        .result-container div {
+            text-align: left;
+            margin-left: 15px;
+            margin-top: 10px;
+            margin-bottom: 22px;
+            font-size: 18px;
+        }
+
+        .result-container span {
+            color: var(--text-color);
+        }
+
+        .result-container strong.highlighted {
+            color: var(--highlight-color);
+            font-weight: bolder;
+        }
+
+        button {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #43a047, #4caf50);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Simulateur 3ème Pilier</h2>
+
+        <div class="choice-group">
+            <h3>Vous êtes :</h3>
+            <div class="choice" data-type="gender">Un homme</div>
+            <div class="choice" data-type="gender">Une femme</div>
+        </div>
+
+        <div class="choice-group">
+            <h3>Votre situation :</h3>
+            <div class="choice" data-type="status">Salarié</div>
+            <div class="choice" data-type="status">Autre</div>
+        </div>
+
+        <div class="slider-container">
+            <h3>Âge :</h3>
+            <div class="slider-wrapper">
+                <input type="range" min="25" max="65" value="25" class="slider" id="ageSlider">
+                <div class="slider-value" id="age-display">25 ans</div>
+            </div>
+        </div>
+
+        <div class="slider-container">
+            <h3>Montant épargné :</h3>
+            <div class="slider-wrapper">
+                <input type="range" min="1" max="12" value="1" step="1" class="slider" id="savingsSlider">
+                <div class="slider-value" id="savings-display">100 CHF / mois</div>
+            </div>
+        </div>
+
+        <div class="result-container">
+            <div id="capital-display">
+                <span>Votre capital à 65 ans :</span> 
+                <strong class="highlighted">0 CHF</strong>
+            </div>
+
+            <div id="annual-tax-savings">
+                <span>Économie d'impôt par an :</span> 
+                <strong class="highlighted">0 CHF</strong>
+            </div>
+
+            <div id="tax-savings">
+                <span>Économie d'impôt à 65 ans :</span> 
+                <strong class="highlighted">0 CHF</strong>
+            </div>
+        </div>
+
+        <button id="request-offer-button">Recevoir mon offre par mail</button>
+    </div>
+
+    <script>
+        document.querySelectorAll('.choice').forEach(choice => {
+            choice.addEventListener('click', () => {
+                const type = choice.getAttribute('data-type');
+                document.querySelectorAll(`[data-type="${type}"]`).forEach(c => c.classList.remove('selected'));
+                choice.classList.add('selected');
+                calculateCapital();
+            });
+        });
+
+        const updateDisplay = (slider, display, min, step) => {
+            let value = Math.max(1, parseInt(slider.value));
+            let displayValue = min + (value - 1) * step;
+            display.textContent = `${displayValue} CHF / mois`;
+        };
+
+        const calculateCapital = () => {
+            const age = parseInt(document.getElementById('ageSlider').value);
+            const yearsTo65 = 65 - age;
+            const monthlySavings = parseInt(document.getElementById('savingsSlider').value) * 50 + 100;
+
+            if (isNaN(monthlySavings) || isNaN(yearsTo65)) {
+                document.getElementById('capital-display').querySelector('strong').textContent = '0 CHF';
+                document.getElementById('annual-tax-savings').querySelector('strong').textContent = '0 CHF';
+                document.getElementById('tax-savings').querySelector('strong').textContent = '0 CHF';
+                return;
+            }
+
+            let capital = 0;
+            const annualInterestRate = 0.06;
+            for (let i = 0; i < yearsTo65; i++) {
+                capital = (capital + monthlySavings * 12) * (1 + annualInterestRate);
+            }
+
+            const annualTaxSaving = monthlySavings * 12 * 0.27;
+
+            document.getElementById('capital-display').querySelector('strong').textContent = Math.round(capital).toLocaleString('fr-CH') + ' CHF';
+            document.getElementById('annual-tax-savings').querySelector('strong').textContent = Math.round(annualTaxSaving).toLocaleString('fr-CH') + ' CHF';
+            const totalTaxSaving = annualTaxSaving * yearsTo65;
+            document.getElementById('tax-savings').querySelector('strong').textContent = Math.round(totalTaxSaving).toLocaleString('fr-CH') + ' CHF';
+        };
+
+        document.getElementById('ageSlider').oninput = function() {
+            document.getElementById('age-display').textContent = `${this.value} ans`;
+            calculateCapital();
+        };
+
+        document.getElementById('savingsSlider').oninput = function() {
+            updateDisplay(this, document.getElementById('savings-display'), 100, 50);
+            calculateCapital();
+        };
+
+        document.getElementById('request-offer-button').addEventListener('click', () => {
+            window.location.href = 'page2.html';
+        });
+    </script>
+</body>
+</html>
